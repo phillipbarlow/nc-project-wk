@@ -2,7 +2,8 @@ const superTest = require('supertest');
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index');
 const db = require('../db/connection');
-const app = require('../app')
+const app = require('../app');
+const { expect } = require('@jest/globals');
 
 beforeEach(()=>{
     return seed(data);
@@ -50,6 +51,18 @@ describe('GET /api/topics', () => {
         .expect(404)
         .then((result)=>{
             expect(result.body.msg).toBe("404 error")
+        })
+    });
+    describe('GET /api', () => {
+        test('Test for status 200', () => {
+            return superTest(app).get('/api')
+            .expect(200)
+            .then((file)=>{
+                const apiDescription = file.body['GET /api']
+                expect(typeof file.body).toBe('object')
+                expect(Object.keys(apiDescription)).toEqual(['description'])
+                expect(Object.values(file.body['GET /api'])).toEqual(['serves up a json representation of all the available endpoints of the api'])
+            })
         })
     });
 });
