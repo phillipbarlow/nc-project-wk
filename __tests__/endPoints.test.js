@@ -65,6 +65,11 @@ describe('GET /api/topics', () => {
             })
         })
     });
+    // describe('GET /api/articles/:article_id',()=>{
+    //     test('/api/articles/1',()=>{
+
+    //     })
+    // })
 });
 
 
