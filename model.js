@@ -1,5 +1,5 @@
 const db = require('./db/connection')
-function getTopics (){
+exports.getTopics = () =>{
     const queryStr = `SELECT * FROM topics;`
     return db.query(queryStr)
     .then((result)=>{
@@ -7,4 +7,3 @@ function getTopics (){
     })
 }
 
-module.exports = {getTopics}
