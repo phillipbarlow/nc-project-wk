@@ -1,4 +1,4 @@
-const { getTopics, getArticle } = require("./model");
+const { getTopics, getArticle, getArticlesCount } = require("./model");
 const endPoints = require("./endpoints.json");
 exports.selectTopics = (req, res) => {
   return getTopics().then((result) => {
@@ -11,11 +11,22 @@ exports.getEndpoints = (req, res) => {
 };
 
 exports.selectArticle = (req, res, next) => {
-    return getArticle(req.params).then((result) =>{
-        res.status(200).send(result)
-        return result
-        })
-        .catch((err)=>{
-          next(err)
-        })
+  return getArticle(req.params).then((result) =>{
+    res.status(200).send(result)
+    return result
+    })
+    .catch((err)=>{
+      next(err)
+    })
+}
+
+exports.selectAllArticles = (req, res, next) => {
+  return getArticlesCount()
+  .then((result)=>{
+    res.status(200).send(result)
+  })
+  .catch((err)=>{
+    // console.log(err)
+    return err
+  })
 }
