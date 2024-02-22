@@ -79,7 +79,6 @@ describe("GET /api/articles/:article_id", () => {
   test('Should respond with object containing author title, article_id,body,topic,created_at,votes,article_img_url', () => {
     return superTest(app).get("/api/articles/2")
     .then((result)=>{
-      console.log(result.body)
       const objectKeys = Object.keys(result.body[0])
       const expectedValues = ['article_id','title','topic','author','body','created_at','votes','article_img_url']
       expect(objectKeys).toEqual(expectedValues)
@@ -100,4 +99,37 @@ describe("GET /api/articles/:article_id", () => {
       expect(JSON.parse(result.text)).toEqual({"msg":"Article not found"})
     })
   });
+})
+describe('GET /api/articles',()=>{
+  test('Should return 200',()=>{
+    return superTest(app).get("/api/articles")
+    .expect(200)
+  })
+  test('Should return object containing array of following properties ,author,title,article_id,topic,created_at,votes,article_img_urlcomment', () => {
+    return superTest(app).get("/api/articles")
+    .then((data)=>{
+      expect(data.body.length).not.toBe(0)
+      data.body.forEach(obj=>{
+        expect(obj).toMatchObject({
+          article_id:expect.any(Number),
+          title:expect.any(String),
+          topic:expect.any(String),
+          author:expect.any(String),
+          created_at:expect.any(String),
+          votes:expect.any(Number),
+          article_img_url:expect.any(String),
+          comment_count:expect.any(Number)
+        })
+      })
+    })
+  });
+  test('The articles should be sorted by date in descending order.',()=>{
+    return superTest(app).get("/api/articles")
+    .then((data)=>{
+      // expect(data.body.treasures.created_at).toBeSortedBy({ descending: true })
+      expect(data.body).toBeSortedBy('created_at',{descending: true });
+      console.log(data.body)
+    })
+    
+  })
 })

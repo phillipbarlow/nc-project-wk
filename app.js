@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const { selectTopics, getEndpoints, selectArticle } = require("./controller");
+const { selectTopics, getEndpoints, selectArticle,selectAllArticles } = require("./controller");
+app.get("/api/articles",selectAllArticles)
 app.get("/api/topics", selectTopics);
 app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", selectArticle);
@@ -18,4 +19,5 @@ app.use((err,req, res, next) => {
     next(err)
   }
 });
+
 module.exports = app;
