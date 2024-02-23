@@ -21,7 +21,6 @@ exports.getArticle = ({article_id}) =>{
 }
 
 exports.getArticlesCount = () => {
-
     const queryStr = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url, COUNT(comment_id) :: INT AS comment_count
     FROM articles
     LEFT JOIN comments
@@ -35,4 +34,25 @@ exports.getArticlesCount = () => {
         return rows
     })
 } 
+
+exports.getAllComments = ({article_id}) => {
+    const queryStr = `SELECT * FROM articles
+    WHERE article_id= $1`
+    return db.query(queryStr,[article_id])
+    .then((result)=>{
+        const {rows} = result;
+        if(rows.length < 1){
+            return Promise.reject({msg:"Article not found", status_code:404})
+        }else{
+            const stringtoQueryStr = `SELECT * FROM comments
+            WHERE article_id =$1
+            ORDER BY created_at DESC;`
+            return db.query(stringtoQueryStr,[article_id])
+            .then((result)=>{
+                const {rows} = result;
+                return rows;
+            }) 
+        }
+    }) 
+}
 

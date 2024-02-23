@@ -1,4 +1,4 @@
-const { getTopics, getArticle, getArticlesCount } = require("./model");
+const { getTopics, getArticle, getArticlesCount, getAllComments } = require("./model");
 const endPoints = require("./endpoints.json");
 exports.selectTopics = (req, res) => {
   return getTopics().then((result) => {
@@ -25,8 +25,14 @@ exports.selectAllArticles = (req, res, next) => {
   .then((result)=>{
     res.status(200).send(result)
   })
-  .catch((err)=>{
-    // console.log(err)
-    return err
-  })
+}
+
+exports.selectAllComments = (req,res,next) =>{
+    return getAllComments(req.params)
+    .then((result)=>{
+      // console.log(result.body)
+      res.status(200).send(result);
+    }).catch((err)=>{
+      next(err)
+    })
 }
