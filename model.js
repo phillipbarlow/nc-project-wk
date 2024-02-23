@@ -56,3 +56,35 @@ exports.getAllComments = ({article_id}) => {
     }) 
 }
 
+
+
+
+// exports.CommentPost= ({username,body},{article_id}) =>{
+//     const queryStr = `INSERT INTO comments (
+//         body,article_id,author)
+//         VALUES($1,$2,$3) RETURNING *;`
+//     return db.query(queryStr,[body,Number(article_id),username])
+//         .then((result)=>{
+//             console.log(result.rows)
+//             return result.rows;
+//         }).catch((err)=>{
+//             console.log(err,'--from model')
+//         })
+// }
+
+exports.CommentPost= ({username,body},{article_id}) =>{
+    const stringtoQuery = `SELECT * FROM comments
+    WHERE author = $1;`
+    return db.query(stringtoQuery, [username])
+    .then((data)=>{
+        // console.log(data.rows)
+        const queryStr = `INSERT INTO comments (
+            body,article_id,author)
+            VALUES($1,$2,$3) RETURNING *;`
+        return db.query(queryStr,[body,Number(article_id),username])
+            .then((result)=>{
+                console.log(result.rows)
+                return result.rows;
+            })
+    })
+}
