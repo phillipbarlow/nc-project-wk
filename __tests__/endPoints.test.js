@@ -126,10 +126,58 @@ describe('GET /api/articles',()=>{
   test('The articles should be sorted by date in descending order.',()=>{
     return superTest(app).get("/api/articles")
     .then((data)=>{
-      // expect(data.body.treasures.created_at).toBeSortedBy({ descending: true })
       expect(data.body).toBeSortedBy('created_at',{descending: true });
-      console.log(data.body)
     })
-    
   })
 })
+describe('api/articles/:article_id/comments', () => {
+  test('returns 200', () => {
+    return superTest(app).get("/api/articles/1/comments")
+    .expect(200)
+  });
+  test('should return allproperties associated with comments', () => {
+    return superTest(app).get("/api/articles/1/comments")
+    .expect(200)
+    .then((data)=>{
+      expect(data.body.length).not.toBe(0)
+      data.body.forEach(obj=>{
+        expect(obj).toMatchObject({
+          comment_id:expect.any(Number),
+          body:expect.any(String),
+          article_id:expect.any(Number),
+          author:expect.any(String),
+          author:expect.any(String),
+          votes:expect.any(Number),
+          created_at:expect.any(String)
+        })
+      })
+    })
+  });
+  test('Should return all articles associated with :article_id of 1',()=>{
+    return superTest(app).get("/api/articles/5/comments")
+    .expect(200)
+  })
+  test('Comments should be served with the most recent comments first.', () => {
+    return superTest(app).get("/api/articles/5/comments")
+    .then((data)=>{
+      // console.log(data.body,'---from test')
+      expect(data.body).toBeSortedBy('created_at',{descending: true });
+    })
+  });
+  test('should return 400 when id is not a number', () => {
+    return superTest(app).get("/api/articles/forklift/comments")
+    .expect(400)
+  });
+  test('Should return 404 when id does not exist',()=>{
+    return superTest(app).get("/api/articles/55/comments")
+    .expect(404)
+  })
+  test('Should return status 200 and empty array when id does exist', () => {
+    return superTest(app).get("/api/articles/2/comments")
+    .expect(200)
+    .then((data)=>{
+      // console.log(data.body,'--from the test')
+      expect(data.body.length).toBe(0)
+    })
+  });
+});
