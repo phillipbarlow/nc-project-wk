@@ -1,4 +1,4 @@
-const { getTopics, getArticle, getArticlesCount, getAllComments, CommentPost } = require("./model");
+const { getTopics, getArticle, getArticlesCount, getAllComments, CommentPost,updateArticle } = require("./model");
 const endPoints = require("./endpoints.json");
 exports.selectTopics = (req, res) => {
   return getTopics().then((result) => {
@@ -44,5 +44,16 @@ exports.postComment = (req,res,next) => {
   .catch((err)=>{
     next(err)
   })
- 
+}
+
+exports.patchArticle = (req,res,next) =>{
+  return updateArticle(req.body,req.params)
+  .then((data)=>{
+    res.status(200).send(data)
+  })
+  .catch((err)=>{
+    // console.log(err,'--err from controller')
+    next(err)
+  })
+  
 }

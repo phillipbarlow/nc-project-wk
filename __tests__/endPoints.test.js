@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const db = require("../db/connection");
 const app = require("../app");
+const supertest = require("supertest");
 
 beforeEach(() => {
   return seed(data);
@@ -214,3 +215,89 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
   });
 })
+describe('PATCH /api/articles/:article_id',()=>{
+  test('should update the votes by adding votes on the selected article', () => {
+    const updateVotes = { inc_votes: 123 };
+    return superTest(app).patch('/api/articles/1')
+    .send(updateVotes)
+    .expect(200)
+    .then((response)=>{
+      expect(response.body.length).not.toBe(0);
+      response.body.forEach(comment=>{
+        expect(comment).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 223,
+          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        })
+      })
+    })
+  });
+  test('should update the votes by subtracting negative votes on the selected article', () => {
+    const updateVotes = { inc_votes: -50 };
+    return superTest(app).patch('/api/articles/1')
+    .send(updateVotes)
+    .expect(200)
+    .then((response)=>{
+      expect(response.body.length).not.toBe(0);
+      response.body.forEach(comment=>{
+        expect(comment).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 50,
+          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        })
+      })
+    })
+  });
+  test('should return a 400 status if passed no votes to update', () => {
+    const updateVotes = { inc_votes: 0 };
+    return superTest(app)
+      .patch('/api/articles/2')
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      })
+  });
+  test('should return a 400 error if the article_id is invalid', () => {
+    const updateVotes = { inc_votes: 123 };
+    return supertest(app)
+      .patch('/api/articles/invalidArticleID')
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('should return a 404 error if the article_id is', () => {
+    const updateVotes = { inc_votes: 123 };
+    return superTest(app)
+      .patch('/api/articles/9999')
+      .send(updateVotes)
+      // .expect(404)
+      .then((response) => {
+        // console.log(response.body,'--from 289')
+        expect(response.body.msg).toBe("Article not found");
+      });
+  });
+})
+
+
+
+
+
+
+
+
+
+
+

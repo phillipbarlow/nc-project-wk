@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+
 exports.getTopics = () => {
   const queryStr = `SELECT * FROM topics;`;
   return db.query(queryStr).then((result) => {
@@ -52,16 +53,39 @@ exports.getAllComments = ({ article_id }) => {
 };
 
 exports.CommentPost = ({ username, body }, { article_id }) => {
-const stringtoQuery = `SELECT * FROM comments
+  const stringtoQuery = `SELECT * FROM comments
         WHERE author = $1;`;
-return db.query(stringtoQuery, [username]).then(() => {
-const queryStr = `INSERT INTO comments (
+  return db.query(stringtoQuery, [username]).then(() => {
+    const queryStr = `INSERT INTO comments (
                 body,article_id,author)
                 VALUES($1,$2,$3) RETURNING *;`;
-return db
-    .query(queryStr, [body, Number(article_id), username])
-    .then((result) => {
-    return result.rows;
-    });
-    });
+    return db
+      .query(queryStr, [body, Number(article_id), username])
+      .then((result) => {
+        return result.rows;
+      });
+  });
+};
+
+exports.updateArticle = ({inc_votes},{article_id}) => {
+    const queryStr = `SELECT * FROM articles
+    WHERE article_id = $1;`;
+    return db.query(queryStr,[article_id])
+    .then((data)=>{
+        console.log(data.length)
+        if(inc_votes === 0 ){
+            return Promise.reject({ msg: "Bad request", status_code: 400 })
+        }
+        const stringtoQuery = `UPDATE articles
+        set votes = votes + $1 
+        WHERE article_id = $2 RETURNING *;`
+        return db.query(stringtoQuery, [inc_votes,article_id])
+        .then((result)=>{
+            if(result.rows.length < 1){
+                return Promise.reject({ msg: "Article not found", status_code: 404 })
+            }else{
+            return result.rows
+            }
+        })
+    })
 };
