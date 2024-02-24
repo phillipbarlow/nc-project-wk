@@ -1,90 +1,67 @@
-const db = require('./db/connection')
-exports.getTopics = () =>{
-    const queryStr = `SELECT * FROM topics;`
-    return db.query(queryStr)
-    .then((result)=>{
-        return result.rows;
-    })
-}
+const db = require("./db/connection");
+exports.getTopics = () => {
+  const queryStr = `SELECT * FROM topics;`;
+  return db.query(queryStr).then((result) => {
+    return result.rows;
+  });
+};
 
-exports.getArticle = ({article_id}) =>{
-    const queryStr = `SELECT * FROM articles
-    WHERE article_id= $1`
-    return db.query(queryStr,[article_id])
-    .then((result)=>{
-        const {rows} = result;
-        if(rows.length < 1){
-            return Promise.reject({msg:"Article not found", status_code:404})
-        }
-        return rows;
-    })  
-}
+exports.getArticle = ({ article_id }) => {
+  const queryStr = `SELECT * FROM articles
+    WHERE article_id= $1`;
+  return db.query(queryStr, [article_id]).then((result) => {
+    const { rows } = result;
+    if (rows.length < 1) {
+      return Promise.reject({ msg: "Article not found", status_code: 404 });
+    }
+    return rows;
+  });
+};
 
 exports.getArticlesCount = () => {
-    const queryStr = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url, COUNT(comment_id) :: INT AS comment_count
+  const queryStr = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url, COUNT(comment_id) :: INT AS comment_count
     FROM articles
     LEFT JOIN comments
     ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
-    ORDER BY created_at DESC;`
+    ORDER BY created_at DESC;`;
 
-    return db.query(queryStr)
-    .then((result)=>{
-        const {rows} = result;
-        return rows
-    })
-} 
+  return db.query(queryStr).then((result) => {
+    const { rows } = result;
+    return rows;
+  });
+};
 
-exports.getAllComments = ({article_id}) => {
-    const queryStr = `SELECT * FROM articles
-    WHERE article_id= $1`
-    return db.query(queryStr,[article_id])
-    .then((result)=>{
-        const {rows} = result;
-        if(rows.length < 1){
-            return Promise.reject({msg:"Article not found", status_code:404})
-        }else{
-            const stringtoQueryStr = `SELECT * FROM comments
+exports.getAllComments = ({ article_id }) => {
+  const queryStr = `SELECT * FROM articles
+    WHERE article_id= $1`;
+  return db.query(queryStr, [article_id]).then((result) => {
+    const { rows } = result;
+    if (rows.length < 1) {
+      return Promise.reject({ msg: "Article not found", status_code: 404 });
+    } else {
+      const stringtoQueryStr = `SELECT * FROM comments
             WHERE article_id =$1
-            ORDER BY created_at DESC;`
-            return db.query(stringtoQueryStr,[article_id])
-            .then((result)=>{
-                const {rows} = result;
-                return rows;
-            }) 
-        }
-    }) 
-}
+            ORDER BY created_at DESC;`;
+      return db.query(stringtoQueryStr, [article_id]).then((result) => {
+        const { rows } = result;
+        return rows;
+      });
+    }
+  });
+};
 
-
-
-
-// exports.CommentPost= ({username,body},{article_id}) =>{
-//     const queryStr = `INSERT INTO comments (
-//         body,article_id,author)
-//         VALUES($1,$2,$3) RETURNING *;`
-//     return db.query(queryStr,[body,Number(article_id),username])
-//         .then((result)=>{
-//             console.log(result.rows)
-//             return result.rows;
-//         }).catch((err)=>{
-//             console.log(err,'--from model')
-//         })
-// }
-
-exports.CommentPost= ({username,body},{article_id}) =>{
-    const stringtoQuery = `SELECT * FROM comments
-    WHERE author = $1;`
-    return db.query(stringtoQuery, [username])
-    .then((data)=>{
-        // console.log(data.rows)
-        const queryStr = `INSERT INTO comments (
-            body,article_id,author)
-            VALUES($1,$2,$3) RETURNING *;`
-        return db.query(queryStr,[body,Number(article_id),username])
-            .then((result)=>{
-                console.log(result.rows)
-                return result.rows;
-            })
-    })
-}
+exports.CommentPost = ({ username, body }, { article_id }) => {
+const stringtoQuery = `SELECT * FROM comments
+        WHERE author = $1;`;
+return db.query(stringtoQuery, [username]).then(() => {
+const queryStr = `INSERT INTO comments (
+                body,article_id,author)
+                VALUES($1,$2,$3) RETURNING *;`;
+return db
+    .query(queryStr, [body, Number(article_id), username])
+    .then((result) => {
+    return result.rows;
+    });
+    });
+};

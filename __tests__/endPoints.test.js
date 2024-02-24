@@ -199,15 +199,18 @@ describe('POST /api/articles/:article_id/comments', () => {
       })
     })
   });
-  test('Testing for incorrect author should return 404 bad request', () => {
+  test('Testing for incorrect author should return 404 not found', () => {
     return superTest(app).post("/api/articles/1/comments").send({username:'phil',body:' testing bla bla bla'})
     .expect(404)
     .then((result)=>{
       expect(result.body.msg).toBe('Invalid input')
     });
+  })
+  test('testing for bad request 400 status', () => {
+    return superTest(app).post("/api/articles/forklift/comments").send({username:'icellusedkars',body:' testing bla bla bla'})
+    .expect(400)
+    .then((result)=>{
+      expect(result.body.msg).toBe('Bad request')
+    })
+  });
 })
-})
-//incorrect author returns 404 Bad request.Needs to handled by SQL
-//missing values returns 400 Bad request.Handle with a promise. reject
-//incorrect id number returns 404 Bad request.Needs to handled by SQL
-//invalid number returns 400 Bad request.Needs to handled by SQL

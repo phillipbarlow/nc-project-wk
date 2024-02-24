@@ -37,7 +37,6 @@ exports.selectAllComments = (req,res,next) =>{
 }
 
 exports.postComment = (req,res,next) => {
-//  console.log(req.body)
   return CommentPost(req.body,req.params)
   .then((result)=>{
     res.status(201).send(result)
