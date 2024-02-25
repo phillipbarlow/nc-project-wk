@@ -1,4 +1,4 @@
-const { getTopics, getArticle, getArticlesCount, getAllComments, CommentPost,updateArticle } = require("./model");
+const { getTopics, getArticle, getArticlesCount, getAllComments, CommentPost,updateArticle,deleteComment } = require("./model");
 const endPoints = require("./endpoints.json");
 exports.selectTopics = (req, res) => {
   return getTopics().then((result) => {
@@ -54,5 +54,15 @@ exports.patchArticle = (req,res,next) =>{
   .catch((err)=>{
     next(err)
   })
-  
+}
+
+exports.deleteComment = (req,res,next) =>{
+  return deleteComment(req.params)
+  .then((result)=>{
+    res.status(204).send(result)
+  })
+  .catch((err)=>{
+    next(err)
+  })
+
 }

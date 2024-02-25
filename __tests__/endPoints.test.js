@@ -289,6 +289,32 @@ describe('PATCH /api/articles/:article_id',()=>{
       });
   });
 })
+describe('DELETE /api/comments/:comment_id',()=>{
+  test('should return 204 for deleted comment', () => {
+    return superTest(app)
+    .delete('/api/comments/1')
+    .send()
+    .expect(204);
+  });
+  test('should return 404 if comment does not exist', () => {
+    return superTest(app)
+    .delete('/api/comments/999')
+    .send()
+    .expect(404)
+    .then((response)=>{
+      expect(response.body.msg).toBe("Article not found");
+    })
+  });
+  test('should return 400 if comment does not exist', () => {
+    return superTest(app)
+    .delete('/api/comments/invalidArticleID')
+    .send()
+    .expect(400)
+    .then((response)=>{
+      expect(response.body.msg).toBe("Bad request");
+    })
+  });
+})
 
 
 
