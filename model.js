@@ -71,9 +71,8 @@ exports.updateArticle = ({inc_votes},{article_id}) => {
     const queryStr = `SELECT * FROM articles
     WHERE article_id = $1;`;
     return db.query(queryStr,[article_id])
-    .then((data)=>{
-        console.log(data.length)
-        if(inc_votes === 0 ){
+    .then(()=>{
+        if(inc_votes === undefined){
             return Promise.reject({ msg: "Bad request", status_code: 400 })
         }
         const stringtoQuery = `UPDATE articles

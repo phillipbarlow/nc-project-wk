@@ -262,7 +262,7 @@ describe('PATCH /api/articles/:article_id',()=>{
     const updateVotes = { inc_votes: 0 };
     return superTest(app)
       .patch('/api/articles/2')
-      .send(updateVotes)
+      .send()
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
@@ -281,11 +281,10 @@ describe('PATCH /api/articles/:article_id',()=>{
   test('should return a 404 error if the article_id is', () => {
     const updateVotes = { inc_votes: 123 };
     return superTest(app)
-      .patch('/api/articles/9999')
+      .patch('/api/articles/999')
       .send(updateVotes)
-      // .expect(404)
+      .expect(404)
       .then((response) => {
-        // console.log(response.body,'--from 289')
         expect(response.body.msg).toBe("Article not found");
       });
   });
