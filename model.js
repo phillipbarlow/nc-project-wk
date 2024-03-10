@@ -1,5 +1,16 @@
 const db = require("./db/connection");
 
+exports.checkTopic = ()=>{
+  const queryStr = `SELECT * FROM topics;`
+  return db.query(queryStr)
+  .then((result)=>{
+    return result
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
+}
+
 exports.getTopics = () => {
   const queryStr = `SELECT * FROM topics;`;
   return db.query(queryStr).then((result) => {
@@ -7,7 +18,7 @@ exports.getTopics = () => {
   });
 };
 
-exports.getArticle = ({ article_id }) => {
+exports.getArticle = ({ article_id}) => {
   const queryStr = `SELECT * FROM articles
     WHERE article_id= $1`;
   return db.query(queryStr, [article_id]).then((result) => {
@@ -19,18 +30,27 @@ exports.getArticle = ({ article_id }) => {
   });
 };
 
-exports.getArticlesCount = () => {
-  const queryStr = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url, COUNT(comment_id) :: INT AS comment_count
-    FROM articles
-    LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC;`;
+exports.getArticlesCount = ({topic}) => {
+  const topicContainer = []
+  let queryStr = `SELECT articles.author,articles.title,articles.article_id,articles.topic,articles.created_at,articles.votes,articles.article_img_url, COUNT(comment_id) :: INT AS comment_count
+  FROM articles
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id `;
+  if(topic){
+    topicContainer.push(topic)
+    queryStr += `
+    WHERE topic = $1
+    `
+  }
+  queryStr+='GROUP BY articles.article_id ORDER BY created_at DESC;'
 
-  return db.query(queryStr).then((result) => {
+  return db.query(queryStr,topicContainer).then((result) => {
     const { rows } = result;
-    return rows;
-  });
+  return rows
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
 };
 
 exports.getAllComments = ({ article_id }) => {
@@ -104,5 +124,12 @@ exports.deleteComment = ({comment_id}) =>{
           return result.rows
       })
       }
+  })
+}
+
+exports.getAllUsers = ()=>{
+  const queryStr = `SELECT * FROM users`;
+  return db.query(queryStr).then((result)=>{
+    return result.rows
   })
 }

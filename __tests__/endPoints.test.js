@@ -105,17 +105,19 @@ describe('GET /api/articles',()=>{
   test('Should return 200',()=>{
     return superTest(app).get("/api/articles")
     .expect(200)
+
   })
   test('Should return object containing array of following properties ,author,title,article_id,topic,created_at,votes,article_img_urlcomment', () => {
     return superTest(app).get("/api/articles")
     .then((data)=>{
-      expect(data.body.length).not.toBe(0)
-      data.body.forEach(obj=>{
+      const response = data.body;
+      expect(response.length).not.toBe(0)
+      response.forEach(obj=>{
         expect(obj).toMatchObject({
-          article_id:expect.any(Number),
-          title:expect.any(String),
-          topic:expect.any(String),
           author:expect.any(String),
+          title:expect.any(String),
+          article_id:expect.any(Number),
+          topic:expect.any(String),
           created_at:expect.any(String),
           votes:expect.any(Number),
           article_img_url:expect.any(String),
@@ -129,6 +131,51 @@ describe('GET /api/articles',()=>{
     .then((data)=>{
       expect(data.body).toBeSortedBy('created_at',{descending: true });
     })
+  })
+  test('Testing for object with topic of cats',()=>{
+    return superTest(app).get("/api/articles?topic=cats")
+    .expect(200)
+    .then((data)=>{
+      const response = data.body[0].topic
+      expect(response).toBe('cats')
+    })
+  })
+  test('Testing for object with topic of mitch',()=>{
+    return superTest(app).get("/api/articles?topic=mitch")
+    .expect(200)
+    .then((data)=>{
+      expect(data.body.length).not.toBe(0);
+      data.body.forEach(comment=>{
+        expect(comment).toMatchObject({
+          title: expect.any(String),
+          topic: 'mitch',
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url:expect.any(String),
+        })
+      })
+    })
+  })
+  test('Return status 200 and empty array for a topic which exist with no articles',()=>{
+    return superTest(app).get("/api/articles?topic=paper")
+    .expect(200)
+    .then((data)=>{
+      const response = data.body;
+      expect(response.length).toBe(0)
+    })
+  })
+  test('Should return a 404 when does not exist in database',()=>{
+    return superTest(app).get("/api/articles?topic=1")
+    .expect(404)
+    .then((data)=>{
+      // console.log(data.body,'--from test')
+      const response = data.body;
+      expect(response.msg).toBe("Article not found")
+    })
+  })
+  test('topic should return all topics',()=>{
+    return superTest(app).get("/api/articles?topic=mitch")
+    .expect(200)
   })
 })
 describe('api/articles/:article_id/comments', () => {
@@ -161,7 +208,6 @@ describe('api/articles/:article_id/comments', () => {
   test('Comments should be served with the most recent comments first.', () => {
     return superTest(app).get("/api/articles/5/comments")
     .then((data)=>{
-      // console.log(data.body,'---from test')
       expect(data.body).toBeSortedBy('created_at',{descending: true });
     })
   });
@@ -177,7 +223,6 @@ describe('api/articles/:article_id/comments', () => {
     return superTest(app).get("/api/articles/2/comments")
     .expect(200)
     .then((data)=>{
-      // console.log(data.body,'--from the test')
       expect(data.body.length).toBe(0)
     })
   });
@@ -316,7 +361,34 @@ describe('DELETE /api/comments/:comment_id',()=>{
   });
 })
 
-
+describe('GET /api/users',()=>{
+  test('should return 200', () => {
+    return superTest(app).get('/api/users')
+    .expect(200)
+  });
+  test('Should return object with given properties',()=>{
+    return superTest(app).get('/api/users')
+    .expect(200)
+    .then((data)=>{
+      expect(data.body.length).not.toBe(0);
+      expect(data.body.length).toBe(4)
+      data.body.forEach(user=>{
+        expect(user).toMatchObject({
+          username:expect.any(String),
+          name:expect.any(String),
+          avatar_url:expect.any(String)
+        })
+      })
+    })
+  })
+  test('should return 404 when not found', () => {
+    return superTest(app).get('/api/forklift')
+    .expect(404)
+    .then((result)=>{
+      expect(result.body.msg).toBe("404 error")
+    })
+  });
+})
 
 
 
