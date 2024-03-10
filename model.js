@@ -20,7 +20,8 @@ exports.getTopics = () => {
 
 exports.getArticle = ({ article_id}) => {
   const queryStr = `SELECT * FROM articles
-    WHERE article_id= $1`;
+    WHERE article_id= $1
+    GROUP BY articles.article_id`;
   return db.query(queryStr, [article_id]).then((result) => {
     const { rows } = result;
     if (rows.length < 1) {
