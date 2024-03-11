@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const { selectTopics, getEndpoints, selectArticle,selectAllArticles, selectAllComments, postComment,patchArticle, deleteComment, selectAllUsers} = require("./controller");
 app.use(express.json())
+app.use(cors())
 app.delete('/api/comments/:comment_id', deleteComment)
 app.post("/api/articles/:article_id/comments",postComment)
 app.get("/api/articles/:article_id/comments",selectAllComments)
@@ -14,7 +15,6 @@ app.get("/api/topics", selectTopics);
 app.get("/api/users", selectAllUsers);
 app.get("/api", getEndpoints);
 
-app.use(cors())
 
 app.use((err,req, res, next) => {
   if(err.code === '22P02' || err.status_code === 400){
