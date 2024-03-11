@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const express = require("express");
 const app = express();
 const { selectTopics, getEndpoints, selectArticle,selectAllArticles, selectAllComments, postComment,patchArticle, deleteComment, selectAllUsers} = require("./controller");
@@ -11,6 +13,8 @@ app.get("/api/articles",selectAllArticles)
 app.get("/api/topics", selectTopics);
 app.get("/api/users", selectAllUsers);
 app.get("/api", getEndpoints);
+
+app.use(cors())
 
 app.use((err,req, res, next) => {
   if(err.code === '22P02' || err.status_code === 400){
