@@ -3,8 +3,8 @@ const cors = require('cors');
 const express = require("express");
 const app = express();
 const { selectTopics, getEndpoints, selectArticle,selectAllArticles, selectAllComments, postComment,patchArticle, deleteComment, selectAllUsers} = require("./controller");
-app.use(express.json())
 app.use(cors())
+app.use(express.json())
 app.delete('/api/comments/:comment_id', deleteComment)
 app.post("/api/articles/:article_id/comments",postComment)
 app.get("/api/articles/:article_id/comments",selectAllComments)
