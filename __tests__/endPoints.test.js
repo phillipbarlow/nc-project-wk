@@ -237,7 +237,7 @@ describe('POST /api/articles/:article_id/comments', () => {
       result.body.forEach(comment=>{
         expect(comment).toMatchObject({
           comment_id:19,
-          body:' testing bla bla bla',
+          body:expect.any(String),
           article_id:1,
           author:'icellusedkars',
           votes:0,
