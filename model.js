@@ -118,7 +118,7 @@ exports.deleteComment = ({comment_id}) =>{
     if(result.rows.length < 1){
       return Promise.reject({ msg: "Article not found", status_code: 404 })
     }else{
-      const queryStr = `SELECT * FROM comments
+      const queryStr = `DELETE FROM comments
       WHERE comment_id = $1;`
       return db.query(queryStr,[comment_id])
       .then((result)=>{
