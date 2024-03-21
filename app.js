@@ -10,6 +10,7 @@ app.post("/api/articles/:article_id/comments",postComment)
 app.get("/api/articles/:article_id/comments",selectAllComments)
 app.patch("/api/articles/:article_id",patchArticle)
 app.get("/api/articles/:article_id", selectArticle);
+app.get("/api/articles/:topic",selectArticle)
 app.get("/api/articles",selectAllArticles)
 app.get("/api/topics", selectTopics);
 app.get("/api/users", selectAllUsers);
