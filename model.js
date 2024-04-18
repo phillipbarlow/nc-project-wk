@@ -59,6 +59,7 @@ exports.getAllComments = ({ article_id }) => {
     WHERE article_id= $1`;
   return db.query(queryStr, [article_id]).then((result) => {
     const { rows } = result;
+    console.log(rows)
     if (rows.length < 1) {
       return Promise.reject({ msg: "Article not found", status_code: 404 });
     } else {
@@ -67,6 +68,7 @@ exports.getAllComments = ({ article_id }) => {
             ORDER BY created_at DESC;`;
       return db.query(stringtoQueryStr, [article_id]).then((result) => {
         const { rows } = result;
+        // console.log(rows)
         return rows;
       });
     }

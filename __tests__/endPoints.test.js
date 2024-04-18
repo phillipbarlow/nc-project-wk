@@ -391,8 +391,9 @@ describe('GET /api/users',()=>{
   });
 })
 describe('GET /api/articles/:article_id (comment_count)',()=>{
-  test('should return ', () => {
-    
+  test('should return all array of users', () => {
+    return superTest(app).get("/api/users")
+    .expect(200)
   });
 })
 
