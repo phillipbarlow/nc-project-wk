@@ -19,9 +19,27 @@ exports.getTopics = () => {
 };
 
 exports.getArticle = ({ article_id}) => {
-  const queryStr = `SELECT * FROM articles
-    WHERE article_id= $1
-    GROUP BY articles.article_id`;
+  // const queryStr = `SELECT *,
+  // article_id
+  // FROM articles
+  //   WHERE article_id= $1
+  //   GROUP BY articles.article_id`;
+  const queryStr = `SELECT 
+  articles.article_id,
+  articles.author,
+  articles.title,
+  articles.body,
+  articles.topic,
+  articles.created_at,
+  articles.votes,
+  articles.article_img_url,
+  COUNT (comments.body)::int AS comment_count
+  FROM comments
+  RIGHT JOIN articles
+  ON comments.article_id = articles.article_id
+  WHERE articles.article_id= $1
+  GROUP BY articles.article_id`;
+  
   return db.query(queryStr, [article_id]).then((result) => {
     const { rows } = result;
     if (rows.length < 1) {
@@ -59,7 +77,6 @@ exports.getAllComments = ({ article_id }) => {
     WHERE article_id= $1`;
   return db.query(queryStr, [article_id]).then((result) => {
     const { rows } = result;
-    console.log(rows)
     if (rows.length < 1) {
       return Promise.reject({ msg: "Article not found", status_code: 404 });
     } else {
@@ -68,7 +85,6 @@ exports.getAllComments = ({ article_id }) => {
             ORDER BY created_at DESC;`;
       return db.query(stringtoQueryStr, [article_id]).then((result) => {
         const { rows } = result;
-        // console.log(rows)
         return rows;
       });
     }

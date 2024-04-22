@@ -81,9 +81,19 @@ describe("GET /api/articles/:article_id", () => {
     return superTest(app).get("/api/articles/2")
     .then((result)=>{
       const objectKeys = Object.keys(result.body[0])
-      const expectedValues = ['article_id','title','topic','author','body','created_at','votes','article_img_url']
+      const expectedValues = [
+        'article_id',
+        'author',
+        'title',
+        'body',
+        'topic',
+        'created_at',
+        'votes',
+        'article_img_url',
+        'comment_count'
+      ]
       expect(objectKeys).toEqual(expectedValues)
-      expect(objectKeys.length).toBe(8)
+      expect(objectKeys.length).toBe(9)
     })
   })
   test('Test for 400 error when /api/articles/forklift', () => {
@@ -169,7 +179,6 @@ describe('GET /api/articles',()=>{
     return superTest(app).get("/api/articles?topic=1")
     .expect(404)
     .then((data)=>{
-      // console.log(data.body,'--from test')
       const response = data.body;
       expect(response.msg).toBe("Article not found")
     })
@@ -390,15 +399,23 @@ describe('GET /api/users',()=>{
     })
   });
 })
-describe('GET /api/articles/:article_id (comment_count)',()=>{
-  test('should return all array of users', () => {
-    return superTest(app).get("/api/users")
+describe.only('GET /api/articles/:article_id (comment_count)',()=>{
+  test('should return total comment count', () => {
+    return superTest(app).get("/api/articles/1")
     .expect(200)
+    .then((data)=>{
+      expect(data.body.length).toBe(1)
+    })
+  });
+  test('should return total comment count', () => {
+    return superTest(app).get("/api/articles/3")
+    .expect(200)
+    .then((data)=>{
+      expect(data.body[0].comment_count).toBe(2)
+      console.log(data.body)
+    })
   });
 })
-
-
-
 
 
 

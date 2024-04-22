@@ -13,6 +13,7 @@ exports.getEndpoints = (req, res) => {
 
 exports.selectArticle = (req, res, next) => {
   return getArticle(req.params).then((result) =>{
+    // console.log(result)
     res.status(200).send(result)
     return result
     })
